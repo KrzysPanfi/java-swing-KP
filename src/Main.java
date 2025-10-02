@@ -30,7 +30,7 @@ public class Main {
         frame.add(basicPanel, BorderLayout.SOUTH);
         JTextField textField = new JTextField(15);
         DefaultTableModel model = new DefaultTableModel();
-        ArrayList<String> list = new ArrayList<String>();
+        ArrayList<ArrayList<String>> list = new ArrayList<>();
 
         model.addColumn("Flaga");
         model.addColumn("Kraj");
@@ -40,7 +40,14 @@ public class Main {
             @Override
             public void keyPressed(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                    list.add(textField.getText());
+                    String country = textField.getText();
+                    ArrayList<String>  arrayList = new ArrayList();
+                    String link="https://pl.wikipedia.org/wiki/"+country;
+                    arrayList.add("111");
+                    arrayList.add(country);
+                    arrayList.add(link);
+                    //list.add(textField.getText());
+                    list.add(arrayList);
                     model.addRow(list.toArray());
                 }
             }
