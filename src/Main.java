@@ -2,14 +2,10 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.ArrayList;
 import java.util.Vector;
 
 public class Main {
@@ -20,78 +16,7 @@ public class Main {
         SwingUtilities.invokeLater(() -> new Main().createAndShowGUI());
     }
 
-    private static JButton getjButton(JTextField textField, DefaultTableModel model) {
-        JButton button = new JButton("Ok");
-        button.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String country = textField.getText();
-                Vector<Object> v = new Vector<>();
-                Icon flag=new ImageIcon("Flaga_"+country+".png");
-                v.add(flag);
-                String link = "https://pl.wikipedia.org/wiki/" + country;
-                v.add(country);
-                v.add(link);
-                model.addRow(v);
-            }
-        });
-        return button;
-    }
 
-    private static JButton getjButton1( DefaultTableModel model) {
-        JButton button = new JButton("Dodaj kraj");
-        button.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                JFrame frame1 = new JFrame("Input");
-                frame1.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-                frame1.setSize(500, 200);
-                frame1.setLayout(new BorderLayout(8, 8));
-
-                JPanel basicPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-
-                frame1.add(basicPanel, BorderLayout.NORTH);
-                JTextField textField = new JTextField(15);
-                JButton button1 = getjButton(textField, model);
-                JButton button2 = getjButton2(frame1);
-                JLabel label = new JLabel("Podaj nazwę kraju:");
-                JLabel label1 = new JLabel(new ImageIcon("znak_zapytania.png"));
-                basicPanel.add(label1);
-                basicPanel.add(label);
-                basicPanel.add(textField);
-                basicPanel.add(button1);
-                basicPanel.add(button2);
-
-                frame1.setVisible(true);
-            }
-        });
-        return button;
-    }
-    private static JButton getjButton2(JFrame frame ) {
-        JButton button = new JButton("Cancel");
-        button.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-               frame.dispose();
-            }
-        });
-        return button;
-    }
-
-
-
-    public static boolean openWebpage(URI uri) {
-        Desktop desktop = Desktop.isDesktopSupported() ? Desktop.getDesktop() : null;
-        if (desktop != null && desktop.isSupported(Desktop.Action.BROWSE)) {
-            try {
-                desktop.browse(uri);
-                return true;
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        return false;
-    }
 
 
     private void createAndShowGUI() {
@@ -99,20 +24,11 @@ public class Main {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(900, 600);
         frame.setLayout(new BorderLayout(8, 8));
-
-        // === SECTION 1: Podstawowe przyciski i pola tekstowe ===
         JPanel basicPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-
-        // JButton z ActionListener
-
-
         frame.add(basicPanel, BorderLayout.SOUTH);
-
         DefaultTableModel model = new DefaultTableModel();
         JButton btn=getjButton1(model);
         basicPanel.add(btn);
-       //
-
         model.addColumn("Flaga");
         model.addColumn("Kraj");
         model.addColumn("Wikipedia");
@@ -125,9 +41,6 @@ public class Main {
         v.add(link);
         model.addRow(v);
         frame.add(basicPanel, BorderLayout.SOUTH);
-
-
-
         JTable table = new JTable();
         table.setModel(model);
         JScrollPane tableScroll = new JScrollPane(table);
@@ -159,6 +72,67 @@ public class Main {
 
     }
 
+    private static JButton getjButton(JTextField textField, DefaultTableModel model) {
+        JButton button = new JButton("Ok");
+        button.addActionListener(e -> {
+            String country = textField.getText();
+            Vector<Object> v = new Vector<>();
+            Icon flag = new ImageIcon("Flaga_" + country + ".png");
+            v.add(flag);
+            String link = "https://pl.wikipedia.org/wiki/" + country;
+            v.add(country);
+            v.add(link);
+            model.addRow(v);
+        });
+        return button;
+    }
+
+    private static JButton getjButton1(DefaultTableModel model) {
+        JButton button = new JButton("Dodaj kraj");
+        button.addActionListener(e -> {
+            JFrame frame1 = new JFrame("Input");
+            frame1.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            frame1.setSize(500, 200);
+            frame1.setLayout(new BorderLayout(8, 8));
+
+            JPanel basicPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+
+            frame1.add(basicPanel, BorderLayout.NORTH);
+            JTextField textField = new JTextField(15);
+            JButton button1 = getjButton(textField, model);
+            JButton button2 = getjButton2(frame1);
+            JLabel label = new JLabel("Podaj nazwę kraju:");
+            JLabel label1 = new JLabel(new ImageIcon("znak_zapytania.png"));
+            basicPanel.add(label1);
+            basicPanel.add(label);
+            basicPanel.add(textField);
+            basicPanel.add(button1);
+            basicPanel.add(button2);
+
+            frame1.setVisible(true);
+        });
+        return button;
+    }
+
+    private static JButton getjButton2(JFrame frame) {
+        JButton button = new JButton("Cancel");
+        button.addActionListener(e -> frame.dispose());
+        return button;
+    }
+
+
+    public static boolean openWebpage(URI uri) {
+        Desktop desktop = Desktop.isDesktopSupported() ? Desktop.getDesktop() : null;
+        if (desktop != null && desktop.isSupported(Desktop.Action.BROWSE)) {
+            try {
+                desktop.browse(uri);
+                return true;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return false;
+    }
 }
  class ImageRender extends DefaultTableCellRenderer{
      @Override
