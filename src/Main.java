@@ -1,10 +1,15 @@
-
-
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.Vector;
 
 public class Main {
 
@@ -12,6 +17,49 @@ public class Main {
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new Main().createAndShowGUI());
+    }
+
+    private static JButton getjButton(JTextField textField, DefaultTableModel model) {
+        JButton button = new JButton("Dodaj Panstwo");
+        button.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String country = textField.getText();
+                Vector<Object> v = new Vector<>();
+                v.add("111");
+                String link = "https://pl.wikipedia.org/wiki/" + country;
+                v.add(country);
+                v.add(link);
+                model.addRow(v);
+            }
+        });
+        return button;
+    }
+
+    private static boolean isUriColumn(JTable table, int column) {
+        return column >= 0 && table.getColumnClass(column).equals(URI.class);
+    }
+
+    public static boolean openWebpage(URI uri) {
+        Desktop desktop = Desktop.isDesktopSupported() ? Desktop.getDesktop() : null;
+        if (desktop != null && desktop.isSupported(Desktop.Action.BROWSE)) {
+            try {
+                desktop.browse(uri);
+                return true;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return false;
+    }
+
+    public static boolean openWebpage(URL url) {
+        try {
+            return openWebpage(url.toURI());
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
     private void createAndShowGUI() {
@@ -24,56 +72,52 @@ public class Main {
         JPanel basicPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 
         // JButton z ActionListener
-        JButton button = new JButton("Dodaj Panstwo");
-        button.addActionListener(e -> JOptionPane.showMessageDialog(frame, "Kliknięto przycisk!"));
-        basicPanel.add(button);
+
+
         frame.add(basicPanel, BorderLayout.SOUTH);
         JTextField textField = new JTextField(15);
         DefaultTableModel model = new DefaultTableModel();
         ArrayList<ArrayList<String>> list = new ArrayList<>();
-
+        JButton button1 = getjButton(textField, model);
+        basicPanel.add(button1);
         model.addColumn("Flaga");
         model.addColumn("Kraj");
         model.addColumn("Wiki");
-
-        textField.addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyPressed(KeyEvent e) {
-                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                    String country = textField.getText();
-                    ArrayList<String>  arrayList = new ArrayList();
-                    String link="https://pl.wikipedia.org/wiki/"+country;
-                    arrayList.add("111");
-                    arrayList.add(country);
-                    arrayList.add(link);
-                    //list.add(textField.getText());
-                    list.add(arrayList);
-                    model.addRow(list.toArray());
-                }
-            }
-        });
         basicPanel.add(new JLabel("Pole tekstowe:"));
         basicPanel.add(textField);
 
         frame.add(basicPanel, BorderLayout.NORTH);
 
 
-        // === SECTION 5: JTable ===
-
-
-        Object[][] data = {
-                {"Jan", 20, 44},
-                {"Anna", 25, 55},
-                {"Piotr", 30, 55}
-        };
-
 
         JTable table = new JTable();
         table.setModel(model);
         JScrollPane tableScroll = new JScrollPane(table);
         frame.add(tableScroll, BorderLayout.CENTER);
+        table.addMouseListener(new MouseAdapter() {
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+                JTable table = (JTable) e.getSource();
+                int row = table.getSelectedRow();
+                int col = table.getSelectedColumn();
+                if (col == 2) {
+                    System.out.println("gggghh");
+                    URI uri = null;
+                    try {
+                        uri = new URI((String) table.getValueAt(row, col));
+                    } catch (URISyntaxException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                    if (Desktop.isDesktopSupported()) {
+                        openWebpage(uri);
+                    }
+                }
+            }
+        });
 
         frame.setVisible(true);
 
     }
 }
+
