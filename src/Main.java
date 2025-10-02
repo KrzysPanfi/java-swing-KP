@@ -1,4 +1,5 @@
 import javax.swing.*;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -26,7 +27,8 @@ public class Main {
             public void actionPerformed(ActionEvent e) {
                 String country = textField.getText();
                 Vector<Object> v = new Vector<>();
-                v.add("111");
+                Icon flag=new ImageIcon("Flaga_"+country+".png");
+                v.add(flag);
                 String link = "https://pl.wikipedia.org/wiki/" + country;
                 v.add(country);
                 v.add(link);
@@ -36,9 +38,7 @@ public class Main {
         return button;
     }
 
-    private static boolean isUriColumn(JTable table, int column) {
-        return column >= 0 && table.getColumnClass(column).equals(URI.class);
-    }
+
 
     public static boolean openWebpage(URI uri) {
         Desktop desktop = Desktop.isDesktopSupported() ? Desktop.getDesktop() : null;
@@ -53,14 +53,6 @@ public class Main {
         return false;
     }
 
-    public static boolean openWebpage(URL url) {
-        try {
-            return openWebpage(url.toURI());
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
 
     private void createAndShowGUI() {
         frame = new JFrame("Swing Tutorial");
@@ -77,6 +69,7 @@ public class Main {
         frame.add(basicPanel, BorderLayout.SOUTH);
         JTextField textField = new JTextField(15);
         DefaultTableModel model = new DefaultTableModel();
+
         ArrayList<ArrayList<String>> list = new ArrayList<>();
         JButton button1 = getjButton(textField, model);
         basicPanel.add(button1);
@@ -85,7 +78,14 @@ public class Main {
         model.addColumn("Wiki");
         basicPanel.add(new JLabel("Pole tekstowe:"));
         basicPanel.add(textField);
-
+        String country = "Polska";
+        Vector<Object> v = new Vector<>();
+        Icon flag=new ImageIcon("Flaga_"+country+".png");
+        v.add(flag);
+        String link = "https://pl.wikipedia.org/wiki/" + country;
+        v.add(country);
+        v.add(link);
+        model.addRow(v);
         frame.add(basicPanel, BorderLayout.NORTH);
 
 
@@ -93,6 +93,8 @@ public class Main {
         JTable table = new JTable();
         table.setModel(model);
         JScrollPane tableScroll = new JScrollPane(table);
+        table.getColumnModel().getColumn(0).setCellRenderer(new ImageRender());
+        table.setRowHeight(100);
         frame.add(tableScroll, BorderLayout.CENTER);
         table.addMouseListener(new MouseAdapter() {
 
@@ -102,7 +104,6 @@ public class Main {
                 int row = table.getSelectedRow();
                 int col = table.getSelectedColumn();
                 if (col == 2) {
-                    System.out.println("gggghh");
                     URI uri = null;
                     try {
                         uri = new URI((String) table.getValueAt(row, col));
@@ -119,5 +120,14 @@ public class Main {
         frame.setVisible(true);
 
     }
+
 }
+ class ImageRender extends DefaultTableCellRenderer{
+     @Override
+     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+         String photoName=value.toString();
+         ImageIcon imageIcon = new ImageIcon(new ImageIcon(photoName).getImage());
+         return new JLabel(imageIcon);
+     }
+ }
 
